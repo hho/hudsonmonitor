@@ -1,6 +1,6 @@
 {
 	"name": "Hudson Monitor",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "This extension can monitor your Hudson CI server",
 	"icons": { "16": "images/icon16.png",
 						 "32": "images/icon32.png",
@@ -19,3 +19,4 @@
 		"https://*/"
 	]
 }
+

@@ -27,11 +27,9 @@
 						lnk.innerHTML = bg.jobs[i].name.link(bg.jobs[i].url);
 					}
 				} else {
-					document.getElementById('wrapper').replaceChild(document.createTextNode('Please check the '), table);
-					var link = document.createElement('a');
-					link.setAttribute('href', 'options.html');
-					link.appendChild(document.createTextNode('configuration'));
-					document.getElementById('wrapper').appendChild(link);
+					var p = document.createElement('p');
+					p.innerHTML = 'Please check the <a href="options.html">configuration</a>.';
+					document.getElementById('wrapper').replaceChild(p, table);
 				}
 			}
 			
@@ -59,9 +57,10 @@
 			<div id="refresh" onclick="bg.doRequest();window.location.reload();" >
 				<img id="refreshIcon" src="images/reload19.png" alt="Refresh Button" />
 			</div>
-			<h3>Hudson Monitor</h3>
+			<h3 onclick="bg.openTab();window.close();">Hudson Monitor</h3>
 			<table id="tab">
 			</table>
 		</div>
 	</body>
 </html>
+

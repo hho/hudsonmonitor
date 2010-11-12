@@ -2,7 +2,6 @@
  * Hudson Monitor Chrome Extension
  * Copyright 2010 by Henning Hoefer
  */
-
 body {
 	background-image: url(images/background.png);
 	background-position: 0% 100%;
@@ -34,8 +33,8 @@ fieldset {
 }
 
 div#wrapper {
-	min-height: 268px;
-	min-width: 250px;
+	min-height: 300px;
+	min-width: 300px;
 }
 
 table#tab td {
@@ -47,13 +46,31 @@ img#refreshIcon {
 	width: 19px;
 	height: 19px;
 	border: 0;
+	vertical-align: text-bottom;
 }
+
 div#refresh {
 	float: right;
+	cursor: pointer;
 }
 
 div#refresh:hover:before {
 	content: "Refresh ";
 	color: silver;
-	vertical-align: top;
+	font-weight: normal;
+	font-size: medium;
 }
+
+div#wrapper h3 {
+	display: inline;
+	cursor: pointer;
+}
+
+div#wrapper h3:hover:after {
+	content: " Home";
+	color: silver;
+	font-weight: normal;
+	font-size: medium;
+	vertical-align: middle;
+}
+
