@@ -1,0 +1,44 @@
+/*
+ * Hudson Monitor Chrome Extension
+ * Copyright 2010 by Henning Hoefer
+ */
+
+body {
+	background-image: url(images/background.png);
+	background-position: 0% 100%;
+	background-repeat: no-repeat;
+	font-family: sans-serif;
+	overflow-x: hidden;
+}
+
+a {
+	color: blue;
+}
+
+a:visited {
+	color: blue;
+}
+
+img#error {
+	visibility: hidden;
+}
+
+input#save {
+	font-weight: bold;
+}
+
+fieldset {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+	width: 20em;
+}
+
+div#wrapper {
+	min-height: 268px;
+	min-width: 250px;
+}
+
+table#tab td {
+	padding: 0.5em;
+	white-space: nowrap;
+}

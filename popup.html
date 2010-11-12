@@ -1,0 +1,58 @@
+<!--
+/*
+ * Hudson Monitor Chrome Extension
+ * Copyright 2010 by Henning Hoefer
+ */
+-->
+<html>
+	<head>
+		<title>Hudson Monitor - Status Popup</title>
+		<base target="_blank"/>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<script type="text/javascript" src="constants.js"></script>
+		<script type="text/javascript">
+			var bg;
+			
+			function init() {
+				bg = chrome.extension.getBackgroundPage();
+				var table = document.getElementById('tab');
+				if (bg.jobs) {
+					for (var i in bg.jobs) {
+						var tr = table.insertRow(i);
+						var sym = tr.insertCell(0);
+						sym.innerHTML = getImage(STATUSES[bg.jobs[i].color]);
+						var lnk = tr.insertCell(1);
+						lnk.innerHTML = bg.jobs[i].name.link(bg.jobs[i].url);
+					}
+				} else {
+					document.getElementById('wrapper').replaceChild(document.createTextNode('Please check the '), table);
+					var link = document.createElement('a');
+					link.setAttribute('href', 'options.html');
+					link.appendChild(document.createTextNode('configuration'));
+					document.getElementById('wrapper').appendChild(link);
+				}
+			}
+			
+			function getImage(status) {
+				if (status == 0) {
+					return '<img src="images/grey19.png" height="19" width="19"/>';
+				} else if (status == 1) {
+					return '<img src="images/blue19.png" height="19" width="19"/>';
+				} else if (status == 2) {
+					return '<img src="images/yellow19.png" height="19" width="19"/>';
+				} else if (status == 3) {
+					return '<img src="images/red19.png" height="19" width="19"/>';
+				} else {
+					return '?';
+				}
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<div id="wrapper">
+			<h3>Hudson Monitor</h3>
+			<table id="tab">
+			</table>
+		</div>
+	</body>
+</html>

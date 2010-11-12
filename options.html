@@ -1,0 +1,201 @@
+<!--
+/*
+ * Hudson Monitor Chrome Extension
+ * Copyright 2010 by Henning Hoefer
+ */
+-->
+<html>
+	<head>
+		<title>Hudson Monitor - Options Page</title>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<script type="text/javascript" src="constants.js"></script>
+		<script type="text/javascript">
+			var urlInput;
+			var errorImage;
+			var refreshDropdown;
+			var authCheckbox;
+			var usernameInput;
+			var passwordInput;
+			var sortByName;
+			var sortByStatus;
+			var sortDesc;
+			var saveButton;
+			
+			function init() {
+				saveButton = document.getElementById('save');
+				
+				urlInput = document.getElementById('url');
+				errorImage = document.getElementById('error');
+				urlInput.value = localStorage.url || 'http://';
+				if (!urlInput.value.match(/https?:\/\/\S+/i)) {
+					errorImage.style.visibility = 'visible';
+				} else {
+					errorImage.style.visibility = 'hidden';
+				}
+				
+				refreshDropdown = document.getElementById('refresh');
+				var refreshTime = localStorage.refreshTime || REFRESH_DEFAULT;
+				for (var i = 0; i < refreshDropdown.options.length; i++) {
+					if (refreshDropdown.options[i].value == refreshTime) {
+						refreshDropdown.selectedIndex = i;
+						break;
+					}
+				}
+				
+				authCheckbox = document.getElementById('auth');
+				usernameInput = document.getElementById('username');
+				passwordInput = document.getElementById('password');
+				if (typeof localStorage.username == 'string') {
+					authCheckbox.checked = true;
+					usernameInput.value = localStorage.username || '';
+					passwordInput.value = localStorage.password || '';
+				} else {
+					authCheckbox.checked = false;
+					usernameInput.value = '';
+					passwordInput.value = '';
+					usernameInput.disabled = true;
+					passwordInput.disabled = true;
+				}
+				
+				sortByName = document.getElementById('sortByName');
+				sortByStatus = document.getElementById('sortByStatus');
+				sortDesc = document.getElementById('sortDesc');
+				if (localStorage.sorting == 'status') {
+					sortByStatus.checked = true;
+				} else {
+					sortByName.checked = true;
+				}
+				if (typeof localStorage.desc == 'string')
+					sortDesc.checked = true;
+				
+				markClean();
+			}
+			
+			function save() {
+				if (urlInput.value != '' && urlInput.value != 'http://') {
+					localStorage.url = urlInput.value.charAt(urlInput.value.length - 1) == '/' ? urlInput.value : urlInput.value + '/';
+				} else {
+					delete localStorage.url;
+				}
+				
+				if (refreshDropdown.value != REFRESH_DEFAULT) {
+					localStorage.refreshTime = refreshDropdown.value;
+				} else {
+					delete localStorage.refreshTime;
+				}
+				
+				if (authCheckbox.checked) {
+					localStorage.username = usernameInput.value;
+					localStorage.password = passwordInput.value;
+				} else {
+					delete localStorage.username;
+					delete localStorage.password;
+				}
+				
+				if (sortByStatus.checked == true) {
+					localStorage.sorting = 'status';
+				} else {
+					delete localStorage.sorting;
+				}
+				if (sortDesc.checked == true) {
+					localStorage.desc = 'true';
+				} else {
+					delete localStorage.desc;
+				}
+				
+				init();
+				chrome.extension.getBackgroundPage().init();
+			}
+			
+			function markDirty() {
+				if (!urlInput.value.match(/https?:\/\/\S+/i)) {
+					errorImage.style.visibility = 'visible';
+				} else {
+					errorImage.style.visibility = 'hidden';
+				}
+				
+				if (authCheckbox.checked == true) {
+					usernameInput.disabled = false;
+					passwordInput.disabled = false;
+				} else {
+					usernameInput.disabled = true;
+					passwordInput.disabled = true;
+				}
+				
+				saveButton.disabled = false;
+			}
+			
+			function markClean() {
+				saveButton.disabled = true;
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<h1>Hudson Monitor</h1>
+		<h2>Options</h2>
+		<fieldset>
+			<legend>Basic Setup</legend>
+			<table>
+				<tr>
+					<td><label for="url">Hudson URL</label></td>
+					<td><input type="text" id="url" name="url" oninput="markDirty()"/></td>
+					<td><img id="error" src="images/error.png" width="16" height="16" alt="Error"/></td>
+				</tr>
+				<tr>
+					<td><label for="refresh">Refresh Time</label></td>
+					<td colspan="2">
+						<select id="refresh" name="refresh" onchange="markDirty()">
+							<option value="5">5 Minutes</option>
+							<option value="10">10 Minutes</option>
+							<option value="15">15 Minutes</option>
+							<option value="20">20 Minutes</option>
+							<option value="25">25 Minutes</option>
+							<option value="30">30 Minutes</option>
+							<option value="35">35 Minutes</option>
+							<option value="40">40 Minutes</option>
+							<option value="45">45 Minutes</option>
+							<option value="50">50 Minutes</option>
+							<option value="55">55 Minutes</option>
+							<option value="60">60 Minutes</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>
+				<input type="checkbox" id="auth" name="auth" onchange="markDirty()"/>
+				<label for="auth">Use authentication</label>
+			</legend>
+			<table>
+				<tr>
+					<td><label for="username">Username</label></td>
+					<td><input type="text" id="username" name="username" oninput="markDirty()"/></td>
+				</tr>
+				<tr>
+					<td><label for="password">Password</label></td>
+					<td><input type="password" id="password" name="password" oninput="markDirty()"/></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>Sorting</legend>
+			<table>
+				<tr>
+					<td><input id="sortByName" type="radio" name="sort" onclick="markDirty()"/></td>
+					<td><label for="sortByName">Sort by name</label></td>
+				</tr>
+				<tr>
+					<td><input id="sortByStatus" type="radio" name="sort" onclick="markDirty()"/></td>
+					<td><label for="sortByStatus">Sort by status</label></td>
+				</tr>
+				<tr>
+					<td style="padding-top: 0.5em"><input id="sortDesc" type="checkbox" name="desc" onchange="markDirty()"/></td>
+					<td style="padding-top: 0.5em"><label for="sortDesc">Invert order</label></td>
+				</tr>
+			</table>
+		</fieldset>
+		<input type="button" id="save" name="save" value="Save" onclick="save()"/>
+		<input type="button" id="cancel" name="cancel" value="Cancel" onclick="init()"/>
+	</body>
+</html>
