@@ -10,6 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="style.css"/>
 		<script type="text/javascript" src="constants.js"></script>
 		<script type="text/javascript">
+			var saveButton;
 			var urlInput;
 			var errorImage;
 			var refreshDropdown;
@@ -19,7 +20,6 @@
 			var sortByName;
 			var sortByStatus;
 			var sortDesc;
-			var saveButton;
 			
 			function init() {
 				saveButton = document.getElementById('save');
@@ -68,6 +68,10 @@
 				if (typeof localStorage.desc == 'string')
 					sortDesc.checked = true;
 				
+				greenBalls = document.getElementById('greenBalls');
+				if (typeof localStorage.green == 'string')
+					greenBalls.checked = true;
+				
 				markClean();
 			}
 			
@@ -101,6 +105,12 @@
 					localStorage.desc = 'true';
 				} else {
 					delete localStorage.desc;
+				}
+				
+				if (greenBalls.checked == true) {
+					localStorage.green = 'true';
+				} else {
+					delete localStorage.green;
 				}
 				
 				init();
@@ -192,6 +202,15 @@
 				<tr>
 					<td style="padding-top: 0.5em"><input id="sortDesc" type="checkbox" name="desc" onchange="markDirty()"/></td>
 					<td style="padding-top: 0.5em"><label for="sortDesc">Invert order</label></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>Successful Builds</legend>
+			<table>
+				<tr>
+					<td><input id="greenBalls" type="checkbox" name="green" onchange="markDirty()"/></td>
+					<td><label for="greenBalls">Use green orb instead of blue one</label></td>
 				</tr>
 			</table>
 		</fieldset>

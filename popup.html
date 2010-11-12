@@ -16,6 +16,8 @@
 			function init() {
 				bg = chrome.extension.getBackgroundPage();
 				var table = document.getElementById('tab');
+				table.innerHTML = '';
+				
 				if (bg.jobs) {
 					for (var i in bg.jobs) {
 						var tr = table.insertRow(i);
@@ -37,7 +39,11 @@
 				if (status == 0) {
 					return '<img src="images/grey19.png" height="19" width="19"/>';
 				} else if (status == 1) {
-					return '<img src="images/blue19.png" height="19" width="19"/>';
+					if (bg.green) {
+						return '<img src="images/green19.png" height="19" width="19"/>';
+					} else {
+						return '<img src="images/blue19.png" height="19" width="19"/>';
+					}
 				} else if (status == 2) {
 					return '<img src="images/yellow19.png" height="19" width="19"/>';
 				} else if (status == 3) {
@@ -50,6 +56,9 @@
 	</head>
 	<body onload="init()">
 		<div id="wrapper">
+			<div id="refresh" onclick="bg.doRequest();window.location.reload();" >
+				<img id="refreshIcon" src="images/reload19.png" alt="Refresh Button" />
+			</div>
 			<h3>Hudson Monitor</h3>
 			<table id="tab">
 			</table>

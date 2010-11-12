@@ -8,16 +8,22 @@
 	<head>
 		<script type="text/javascript" src="constants.js"></script>
 		<script type="text/javascript">
-			var errorCount;
+			// Prefs
 			var refreshTime;
 			var requestUrl;
 			var auth;
-			var jobs;
 			var desc;
+			var green;
+			
+			// Globals (eww!)
+			var abortTimer;
+			var refreshTimer;
+			var jobs;
+			var xhr;
 			
 			function init() {
 				desc = localStorage.desc == 'true';
-				errorCount = 0;
+				green = localStorage.green == 'true';
 				if (!localStorage.url) {
 					updateStatus(-1);
 					jobs = null;
@@ -38,65 +44,64 @@
 			}
 			
 			function doRequest() {
-				var xhr = new XMLHttpRequest();
-				var abortTimer = window.setTimeout(function() {
+				if (xhr) {
 					xhr.abort();
-				}, REQUEST_TIMEOUT);
-				
-				function handleSuccess(status) {
-					window.clearTimeout(abortTimer);
-					errorCount = 0;
-					updateStatus(status);
-					window.setTimeout(doRequest, refreshTime);
 				}
-				
-				function handleError(error) {
-					window.clearTimeout(abortTimer);
-					errorCount++;
-					jobs = null;
-					updateStatus('ERROR');
-					if (errorCount <= 10)
-						console.error(error);
-					window.setTimeout(doRequest, refreshTime);
-				}
+				xhr = new XMLHttpRequest();
+				window.clearTimeout(abortTimer);
+				abortTimer = window.setTimeout(xhr.abort, REQUEST_TIMEOUT);
 				
 				try {
-					xhr.onreadystatechange = function() {
-						if (xhr.readyState != 4)
-							return;
-						
-						if (xhr.status == 200 && xhr.responseText) {
-							var response = JSON.parse(xhr.responseText);
-							var topStatus = -1;
-							if (response.jobs) {
-								jobs = response.jobs;
-								if (localStorage.sorting == 'status') {
-									jobs.sort(sortByStatus);
-								} else {
-									jobs.sort(sortByName);
-								}
-								for (var i in response.jobs)
-									topStatus = Math.max(topStatus, STATUSES[response.jobs[i].color]);
-							}
-							handleSuccess(topStatus);
-							return;
-						}
-						
-						handleError(xhr.status != 200 ? 'HTTP ' + xhr.status : 'No responseText found');
-					}
-					
-					xhr.onerror = function(error) {
-						handleError(error);
-					}
-					
+					xhr.onreadystatechange = checkResponse;
+					xhr.onerror = handleError;
 					xhr.open('GET', requestUrl + 'api/json', true);
-					if (typeof auth == 'string')
+					if (typeof auth == 'string') {
 						xhr.setRequestHeader('Authorization', 'Basic ' + auth);
+					}
 					xhr.send();
 				} catch (e) {
-					console.error('Exception occurred: ' + e);
 					handleError(e);
 				}
+			}
+			
+			function checkResponse() {
+				if (xhr.readyState != 4) return;
+				
+				if (xhr.status == 200 && xhr.responseText) {
+					var response = JSON.parse(xhr.responseText);
+					var topStatus = -1;
+					if (response.jobs) {
+						jobs = response.jobs;
+						if (localStorage.sorting == 'status') {
+							jobs.sort(sortByStatus);
+						} else {
+							jobs.sort(sortByName);
+						}
+						for (var i in response.jobs)
+							topStatus = Math.max(topStatus, STATUSES[response.jobs[i].color]);
+					}
+					handleSuccess(topStatus);
+					return;
+				} else {
+					handleError(xhr.status != 200 ? 'HTTP ' + xhr.status : 'No responseText found');
+				}
+			}
+			
+			function handleSuccess(status) {
+				xhr = null;
+				window.clearTimeout(abortTimer);
+				updateStatus(status);
+				window.clearTimeout(refreshTimer);
+				refreshTimer = window.setTimeout(doRequest, refreshTime);
+			}
+			
+			function handleError(error) {
+				xhr = null;
+				window.clearTimeout(abortTimer);
+				jobs = null;
+				updateStatus('ERROR');
+				window.clearTimeout(refreshTimer);
+				refreshTimer = window.setTimeout(doRequest, refreshTime);
 			}
 			
 			function sortByName(a, b) {
@@ -117,7 +122,11 @@
 					chrome.browserAction.setIcon({path:'images/grey19.png'});
 					chrome.browserAction.setBadgeText({text:''});
 				} else if (status == 1) {
-					chrome.browserAction.setIcon({path:'images/blue19.png'});
+					if (green) {
+						chrome.browserAction.setIcon({path:'images/green19.png'});
+					} else {
+						chrome.browserAction.setIcon({path:'images/blue19.png'});
+					}
 					chrome.browserAction.setBadgeText({text:''});
 				} else if (status == 2) {
 					chrome.browserAction.setIcon({path:'images/yellow19.png'});

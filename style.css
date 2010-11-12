@@ -42,3 +42,18 @@ table#tab td {
 	padding: 0.5em;
 	white-space: nowrap;
 }
+
+img#refreshIcon {
+	width: 19px;
+	height: 19px;
+	border: 0;
+}
+div#refresh {
+	float: right;
+}
+
+div#refresh:hover:before {
+	content: "Refresh ";
+	color: silver;
+	vertical-align: top;
+}
