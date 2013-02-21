@@ -1,17 +1,22 @@
 {
+	"manifest_version": 2,
 	"name": "Hudson Monitor",
 	"version": "0.3.1",
 	"description": "This extension can monitor your Hudson CI server",
-	"icons": { "16": "images/icon16.png",
-						 "32": "images/icon32.png",
-						 "48": "images/icon48.png",
-						"128": "images/icon128.png" },
+	"icons": {
+		"16": "images/icon16.png",
+		"32": "images/icon32.png",
+		"48": "images/icon48.png",
+		"128": "images/icon128.png"
+	},
 	"browser_action": {
 		"default_icon": "images/icon19.png",
 		"default_title": "Hudson Monitor",
-		"popup": "popup.html"
+		"default_popup": "popup.html"
 	},
-	"background_page": "background.html",
+	"background": {
+		"page": "background.html"
+	},
 	"options_page": "options.html",
 	"permissions": [
 		"tabs",

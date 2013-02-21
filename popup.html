@@ -5,7 +5,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,54 +19,14 @@
 		<base target="_blank"/>
 		<link rel="stylesheet" type="text/css" href="style.css"/>
 		<script type="text/javascript" src="constants.js"></script>
-		<script type="text/javascript">
-			var bg;
-			
-			function init() {
-				bg = chrome.extension.getBackgroundPage();
-				var table = document.getElementById('tab');
-				table.innerHTML = '';
-				
-				if (bg.jobs) {
-					for (var i in bg.jobs) {
-						var tr = table.insertRow(i);
-						var sym = tr.insertCell(0);
-						sym.innerHTML = getImage(STATUSES[bg.jobs[i].color]);
-						var lnk = tr.insertCell(1);
-						lnk.innerHTML = bg.jobs[i].name.link(bg.jobs[i].url);
-					}
-				} else {
-					var p = document.createElement('p');
-					p.innerHTML = 'Please check the <a href="options.html">configuration</a>.';
-					document.getElementById('wrapper').replaceChild(p, table);
-				}
-			}
-			
-			function getImage(status) {
-				if (status == 0) {
-					return '<img src="images/grey19.png" height="19" width="19"/>';
-				} else if (status == 1) {
-					if (bg.green) {
-						return '<img src="images/green19.png" height="19" width="19"/>';
-					} else {
-						return '<img src="images/blue19.png" height="19" width="19"/>';
-					}
-				} else if (status == 2) {
-					return '<img src="images/yellow19.png" height="19" width="19"/>';
-				} else if (status == 3) {
-					return '<img src="images/red19.png" height="19" width="19"/>';
-				} else {
-					return '?';
-				}
-			}
-		</script>
+		<script type="text/javascript" src="popup.js"></script>
 	</head>
-	<body onload="init()">
+	<body>
 		<div id="wrapper">
-			<div id="refresh" onclick="bg.doRequest();window.location.reload();" >
+			<div id="refresh">
 				<img id="refreshIcon" src="images/reload19.png" alt="Refresh Button" />
 			</div>
-			<h3 onclick="bg.openTab();window.close();">Hudson Monitor</h3>
+			<h1 id="monitor">Hudson Monitor</h1>
 			<table id="tab">
 			</table>
 		</div>
